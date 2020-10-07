@@ -18,18 +18,16 @@ if(!empty($_REQUEST['code'])){
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $curlPost);	
 	$data = json_decode(curl_exec($ch), true);
-	$http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
-	if($http_code == 200){
-		$url = 'https://www.googleapis.com/plus/v1/people/me';			
-		$ch = curl_init();		
-		curl_setopt($ch, CURLOPT_URL, $url);		
+	if(!empty($data['access_token'])){
+		$url = 'https://www.googleapis.com/oauth2/v2/userinfo?fields=email,verified_email';	
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$data['access_token']));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer '.$data['access_token']]);
 		$data2 = json_decode(curl_exec($ch), true);
-		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);		
-		if($http_code == 200){
-			$_SESSION['logged_in'] = 1;
+		if(!empty($data2['email']) and !empty($data2['verified_email'])){
+			$_SESSION['logged_in'] = true;
 			$_SESSION['email'] = $data2['emails'][0]['value'];
 		}
 	}
@@ -41,10 +39,11 @@ if(empty($_SESSION['logged_in'])){
 
 ?>
 <html>
-<head>...</head>
+<head>
+	<title>Logowanie przez Google</title>
+</head>
 
 <body>
-	...
 	
 	<?php
 		if(empty($_SESSION['logged_in'])){
@@ -55,8 +54,6 @@ if(empty($_SESSION['logged_in'])){
 			echo('Witaj '.$_SESSION['email']);
 		}
 	?>
-		
 
-	...
 </body>
 </html>
