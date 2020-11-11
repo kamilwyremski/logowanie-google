@@ -28,7 +28,7 @@ if(!empty($_REQUEST['code'])){
 		$data2 = json_decode(curl_exec($ch), true);
 		if(!empty($data2['email']) and !empty($data2['verified_email'])){
 			$_SESSION['logged_in'] = true;
-			$_SESSION['email'] = $data2['emails'];
+			$_SESSION['email'] = $data2['email'];
 		}
 	}
 }
